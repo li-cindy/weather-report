@@ -10,6 +10,8 @@ import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.text.SimpleDateFormat
+import java.util.*
 
 class WeatherDetailsActivity : AppCompatActivity() {
 
@@ -46,14 +48,25 @@ class WeatherDetailsActivity : AppCompatActivity() {
                 tvHumidity.text = String.format("Humidity: %s", weatherResult?.main?.humidity.toString())
                 tvPressure.text = String.format("Pressure: %s", weatherResult?.main?.pressure.toString())
                 tvWind.text = String.format("Wind: %s", weatherResult?.wind?.speed.toString())
-                tvSunrise.text = String.format("Sunrise: %s", weatherResult?.sys?.sunrise.toString())
-                tvSunset.text = String.format("Sunset: %s", weatherResult?.sys?.sunset.toString())
+
                 Glide.with(this@WeatherDetailsActivity)
                     .load(
                         ("https://openweathermap.org/img/w/" +
                                 response.body()?.weather?.get(0)?.icon
                                 + ".png"))
                     .into(ivIcon)
+
+                val calendar = Calendar.getInstance()
+
+                val sunrise = response.body()?.sys?.sunrise!!.toLong()
+                calendar.setTimeInMillis(sunrise * 1000)
+                tvSunrise.text = String.format("Sunrise: %s", SimpleDateFormat("HH:mm").format(calendar.time))
+
+                val sunset = response.body()?.sys?.sunset!!.toLong()
+                calendar.setTimeInMillis(sunset * 1000)
+                tvSunset.text = String.format("Sunset: %s", SimpleDateFormat("HH:mm").format(calendar.time))
+
+
 
             }
         })
